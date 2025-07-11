@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SafetyIncidentsApp", "SafetyIncidentsApp\SafetyIncidentsApp.csproj", "{334C03D3-49DE-4431-88A6-36119779D774}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SafetyIncidentsApp.Tests", "SafetyIncidentsApp.Tests\SafetyIncidentsApp.Tests.csproj", "{D5249A34-78A6-4855-B533-69E5562C7FDF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{334C03D3-49DE-4431-88A6-36119779D774}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{334C03D3-49DE-4431-88A6-36119779D774}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{334C03D3-49DE-4431-88A6-36119779D774}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{334C03D3-49DE-4431-88A6-36119779D774}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5249A34-78A6-4855-B533-69E5562C7FDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5249A34-78A6-4855-B533-69E5562C7FDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5249A34-78A6-4855-B533-69E5562C7FDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5249A34-78A6-4855-B533-69E5562C7FDF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
