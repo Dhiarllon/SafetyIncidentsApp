@@ -272,6 +272,9 @@ public class IncidentService : IIncidentService
 
     private void ApplyBusinessRules(Incident incident)
     {
+        if (incident == null)
+            throw new ArgumentNullException(nameof(incident), "Incident cannot be null.");
+
         // Regras baseadas na severidade
         switch (incident.Severity)
         {
@@ -311,6 +314,7 @@ public class IncidentService : IIncidentService
         if (incident.EstimatedCost > 5000)
         {
             incident.RequiresManagerApproval = true;
+            incident.Status = IncidentStatus.PendingApproval;
         }
 
         if (incident.EstimatedCost > 10000)

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SafetyIncidentsApp.Data;
+using SafetyIncidentsApp.Models;
 
 namespace SafetyIncidentsApp.Tests
 {
@@ -9,18 +10,12 @@ namespace SafetyIncidentsApp.Tests
         public static void ConfigureTestServices(IServiceCollection services, string databaseName = null)
         {
             // Remove all existing DbContext registrations
-            var dbContextDescriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
-            if (dbContextDescriptor != null)
+            var descriptorsToRemove = services.Where(d =>
+                d.ServiceType.Name.Contains("DbContextOptions") ||
+                d.ServiceType == typeof(AppDbContext)).ToList();
+            foreach (var descriptor in descriptorsToRemove)
             {
-                services.Remove(dbContextDescriptor);
-            }
-
-            var dbContextServiceDescriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(AppDbContext));
-            if (dbContextServiceDescriptor != null)
-            {
-                services.Remove(dbContextServiceDescriptor);
+                services.Remove(descriptor);
             }
 
             // Add in-memory database for testing
@@ -65,7 +60,7 @@ namespace SafetyIncidentsApp.Tests
                     Position = "Técnico de Segurança",
                     HireDate = DateTime.Now.AddYears(-1),
                     SafetyTrainingLevel = "Avançado",
-                    LastSafetyTraining = DateTime.Now.AddMonths(-1),
+                    LastSafetyTraining = DateTime.Now.AddMonths(-8), // More than 6 months ago
                     IsActive = true
                 },
                 new Employee

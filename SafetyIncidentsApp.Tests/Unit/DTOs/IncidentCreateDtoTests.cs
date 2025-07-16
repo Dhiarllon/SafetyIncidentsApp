@@ -39,8 +39,13 @@ namespace SafetyIncidentsApp.Tests.Unit.DTOs
             // Arrange
             var dto = new IncidentCreateDto
             {
-                // Missing required fields
-                Description = "Test description"
+                // All required fields are missing or have invalid values
+                Date = DateTime.UtcNow.AddDays(1), // Future date - should fail validation
+                Location = string.Empty,
+                Type = (IncidentType)999, // Invalid enum value - should fail validation
+                Description = string.Empty,
+                Severity = (SeverityLevel)999, // Invalid enum value - should fail validation
+                ReportedById = Guid.Empty
             };
 
             // Act
@@ -52,6 +57,7 @@ namespace SafetyIncidentsApp.Tests.Unit.DTOs
             validationResults.Should().Contain(v => v.MemberNames.Contains("Date"));
             validationResults.Should().Contain(v => v.MemberNames.Contains("Location"));
             validationResults.Should().Contain(v => v.MemberNames.Contains("Type"));
+            validationResults.Should().Contain(v => v.MemberNames.Contains("Description"));
             validationResults.Should().Contain(v => v.MemberNames.Contains("Severity"));
             validationResults.Should().Contain(v => v.MemberNames.Contains("ReportedById"));
         }

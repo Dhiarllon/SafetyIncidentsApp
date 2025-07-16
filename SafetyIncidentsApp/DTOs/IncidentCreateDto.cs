@@ -6,6 +6,7 @@ namespace SafetyIncidentsApp.DTOs
     public class IncidentCreateDto
     {
         [Required(ErrorMessage = "Date is required.")]
+        [CustomValidation(typeof(IncidentCreateDto), nameof(ValidateDate))]
         public DateTime Date { get; set; }
 
         [Required(ErrorMessage = "Location is required.")]
@@ -13,6 +14,7 @@ namespace SafetyIncidentsApp.DTOs
         public string Location { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Type is required.")]
+        [CustomValidation(typeof(IncidentCreateDto), nameof(ValidateType))]
         public IncidentType Type { get; set; }
 
         [Required(ErrorMessage = "Description is required.")]
@@ -20,12 +22,14 @@ namespace SafetyIncidentsApp.DTOs
         public string Description { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Severity is required.")]
+        [CustomValidation(typeof(IncidentCreateDto), nameof(ValidateSeverity))]
         public SeverityLevel Severity { get; set; }
 
         [StringLength(500, ErrorMessage = "Corrective action cannot exceed 500 characters.")]
         public string? CorrectiveAction { get; set; }
 
-        [Required(ErrorMessage = "Reported by employee ID is required.")]
+        [Required(ErrorMessage = "ReportedById is required.")]
+        [CustomValidation(typeof(IncidentCreateDto), nameof(ValidateReportedById))]
         public Guid ReportedById { get; set; }
 
         public Guid? InvolvedEmployeeId { get; set; }
@@ -42,5 +46,41 @@ namespace SafetyIncidentsApp.DTOs
 
         [StringLength(500, ErrorMessage = "Witnesses cannot exceed 500 characters.")]
         public string? Witnesses { get; set; }
+
+        public static ValidationResult? ValidateDate(DateTime date, ValidationContext context)
+        {
+            if (date > DateTime.UtcNow)
+            {
+                return new ValidationResult("Date cannot be in the future.", new[] { "Date" });
+            }
+            return ValidationResult.Success;
+        }
+
+        public static ValidationResult? ValidateType(IncidentType type, ValidationContext context)
+        {
+            if (!Enum.IsDefined(typeof(IncidentType), type))
+            {
+                return new ValidationResult("Type is invalid.", new[] { "Type" });
+            }
+            return ValidationResult.Success;
+        }
+
+        public static ValidationResult? ValidateSeverity(SeverityLevel severity, ValidationContext context)
+        {
+            if (!Enum.IsDefined(typeof(SeverityLevel), severity))
+            {
+                return new ValidationResult("Severity is invalid.", new[] { "Severity" });
+            }
+            return ValidationResult.Success;
+        }
+
+        public static ValidationResult? ValidateReportedById(Guid reportedById, ValidationContext context)
+        {
+            if (reportedById == Guid.Empty)
+            {
+                return new ValidationResult("ReportedById is required.", new[] { "ReportedById" });
+            }
+            return ValidationResult.Success;
+        }
     }
 }

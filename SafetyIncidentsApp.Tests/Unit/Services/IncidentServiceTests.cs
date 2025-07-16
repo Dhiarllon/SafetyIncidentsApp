@@ -61,7 +61,13 @@ namespace SafetyIncidentsApp.Tests.Unit.Services
                 EstimatedCost = 15000
             };
 
-            var incident = new Incident { Id = Guid.NewGuid() };
+            var incident = new Incident 
+            { 
+                Id = Guid.NewGuid(),
+                Severity = SeverityLevel.High,
+                Type = IncidentType.Fall,
+                EstimatedCost = 15000
+            };
             var incidentReadDto = new IncidentReadDto { Id = incident.Id };
 
             _mockRepository.Setup(r => r.AnyAsync(It.IsAny<Expression<Func<Incident, bool>>>()))
@@ -100,12 +106,20 @@ namespace SafetyIncidentsApp.Tests.Unit.Services
                 Description = "Choque elétrico",
                 Type = IncidentType.ElectricShock,
                 Severity = SeverityLevel.Medium,
-                ReportedById = employeeId,
-                InvestigationNotes = "Falta de isolamento adequado"
+                ReportedById = employeeId
+                // Missing InvestigationNotes - should cause validation error
+            };
+
+            var incident = new Incident 
+            { 
+                Id = Guid.NewGuid(),
+                Severity = SeverityLevel.Medium,
+                Type = IncidentType.ElectricShock
             };
 
             _mockRepository.Setup(r => r.AnyAsync(It.IsAny<Expression<Func<Incident, bool>>>()))
                 .ReturnsAsync(false);
+            _mockMapper.Setup(m => m.Map<Incident>(incidentDto)).Returns(incident);
 
             // Act & Assert
             var exception = await Assert.ThrowsAsync<ArgumentException>(() => _service.CreateAsync(incidentDto));
@@ -169,7 +183,13 @@ namespace SafetyIncidentsApp.Tests.Unit.Services
                 EstimatedCost = 7500
             };
 
-            var incident = new Incident { Id = Guid.NewGuid() };
+            var incident = new Incident 
+            { 
+                Id = Guid.NewGuid(),
+                Severity = SeverityLevel.Low,
+                Type = IncidentType.Other,
+                EstimatedCost = 7500
+            };
             var incidentReadDto = new IncidentReadDto { Id = incident.Id };
 
             _mockRepository.Setup(r => r.AnyAsync(It.IsAny<Expression<Func<Incident, bool>>>()))
@@ -280,7 +300,13 @@ namespace SafetyIncidentsApp.Tests.Unit.Services
                 CorrectiveAction = "Test corrective action" // Required for high severity fall
             };
 
-            var incident = new Incident { Id = Guid.NewGuid() };
+            var incident = new Incident 
+            { 
+                Id = Guid.NewGuid(),
+                Severity = severity,
+                Type = IncidentType.Fall,
+                EstimatedCost = 1000
+            };
             var incidentReadDto = new IncidentReadDto { Id = incident.Id };
 
             _mockRepository.Setup(r => r.AnyAsync(It.IsAny<Expression<Func<Incident, bool>>>()))
