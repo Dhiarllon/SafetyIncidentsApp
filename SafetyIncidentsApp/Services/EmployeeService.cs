@@ -1,36 +1,31 @@
 using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using SafetyIncidentsApp.Data;
 using SafetyIncidentsApp.DTOs;
 using SafetyIncidentsApp.Models;
+using SafetyIncidentsApp.Repositories.Interfaces;
 using SafetyIncidentsApp.Services.Interfaces;
 
 namespace SafetyIncidentsApp.Services;
 
 public class EmployeeService : IEmployeeService
 {
-    private readonly AppDbContext _context;
+    private readonly IEmployeeRepository _repository;
     private readonly IMapper _mapper;
 
-    public EmployeeService(AppDbContext context, IMapper mapper)
+    public EmployeeService(IEmployeeRepository repository, IMapper mapper)
     {
-        _context = context;
+        _repository = repository;
         _mapper = mapper;
     }
 
     public async Task<IEnumerable<EmployeeReadDto>> GetAllAsync()
     {
-        var employees = await _context.Employees
-            .Where(e => e.IsActive)
-            .OrderBy(e => e.Name)
-            .ToListAsync();
-
+        var employees = await _repository.GetActiveEmployeesAsync();
         return _mapper.Map<IEnumerable<EmployeeReadDto>>(employees);
     }
 
     public async Task<EmployeeReadDto?> GetByIdAsync(Guid id)
     {
-        var employee = await _context.Employees.FindAsync(id);
+        var employee = await _repository.GetByIdAsync(id);
         return employee == null ? null : _mapper.Map<EmployeeReadDto>(employee);
     }
 
@@ -40,38 +35,27 @@ public class EmployeeService : IEmployeeService
 
         var employee = _mapper.Map<Employee>(employeeDto);
         
-        _context.Employees.Add(employee);
-        await _context.SaveChangesAsync();
+        await _repository.AddAsync(employee);
+        await _repository.SaveChangesAsync();
 
         return _mapper.Map<EmployeeReadDto>(employee);
     }
 
     public async Task<IEnumerable<EmployeeReadDto>> GetByDepartmentAsync(string department)
     {
-        var employees = await _context.Employees
-            .Where(e => e.Department.Contains(department) && e.IsActive)
-            .OrderBy(e => e.Name)
-            .ToListAsync();
-
+        var employees = await _repository.GetByDepartmentAsync(department);
         return _mapper.Map<IEnumerable<EmployeeReadDto>>(employees);
     }
 
     public async Task<IEnumerable<EmployeeReadDto>> GetEmployeesNeedingTrainingAsync()
     {
-        var sixMonthsAgo = DateTime.UtcNow.AddMonths(-6);
-        
-        var employees = await _context.Employees
-            .Where(e => e.IsActive && 
-                       (e.LastSafetyTraining == null || e.LastSafetyTraining < sixMonthsAgo))
-            .OrderBy(e => e.LastSafetyTraining)
-            .ToListAsync();
-
+        var employees = await _repository.GetEmployeesNeedingTrainingAsync();
         return _mapper.Map<IEnumerable<EmployeeReadDto>>(employees);
     }
 
     public async Task UpdateTrainingRecordAsync(Guid id, DateTime trainingDate)
     {
-        var employee = await _context.Employees.FindAsync(id);
+        var employee = await _repository.GetByIdAsync(id);
         if (employee == null)
             throw new ArgumentException("Employee not found.");
 
@@ -85,16 +69,15 @@ public class EmployeeService : IEmployeeService
             throw new ArgumentException("Training date cannot be more than 5 years in the past.");
 
         employee.LastSafetyTraining = trainingDate;
-        await _context.SaveChangesAsync();
+        await _repository.SaveChangesAsync();
     }
 
     private async Task ValidateEmployeeCreation(EmployeeCreateDto employeeDto)
     {
         // Verificar se o código do funcionário já existe
-        var existingEmployee = await _context.Employees
-            .FirstOrDefaultAsync(e => e.EmployeeCode == employeeDto.EmployeeCode);
+        var employeeCodeExists = await _repository.EmployeeCodeExistsAsync(employeeDto.EmployeeCode);
 
-        if (existingEmployee != null)
+        if (employeeCodeExists)
             throw new ArgumentException("Employee code already exists.");
 
         // Verificar se a data de contratação é válida

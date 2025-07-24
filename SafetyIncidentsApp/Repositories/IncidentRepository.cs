@@ -14,7 +14,6 @@ namespace SafetyIncidentsApp.Repositories
             return await _context.Incidents
                 .Include(i => i.ReportedBy)
                 .Include(i => i.InvolvedEmployee)
-                .Include(i => i.SafetyInspection)
                 .OrderByDescending(i => i.Date)
                 .ToListAsync();
         }
@@ -24,7 +23,6 @@ namespace SafetyIncidentsApp.Repositories
             return await _context.Incidents
                 .Include(i => i.ReportedBy)
                 .Include(i => i.InvolvedEmployee)
-                .Include(i => i.SafetyInspection)
                 .FirstOrDefaultAsync(i => i.Id == id);
         }
 

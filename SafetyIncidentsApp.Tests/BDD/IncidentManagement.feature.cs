@@ -122,13 +122,13 @@ this.FeatureBackground();
                             "Value"});
                 table1.AddRow(new string[] {
                             "Location",
-                            "Andar 2 - Ala Norte"});
+                            "2nd Floor - North Wing"});
                 table1.AddRow(new string[] {
                             "Type",
                             "Fall"});
                 table1.AddRow(new string[] {
                             "Description",
-                            "Escorregou no piso molhado"});
+                            "Slipped on wet floor"});
                 table1.AddRow(new string[] {
                             "Severity",
                             "Low"});
@@ -147,9 +147,6 @@ this.FeatureBackground();
 #line 21
     testRunner.And("the incident should not require manager approval", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 22
-    testRunner.And("the incident should not require safety review", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
             }
             this.ScenarioCleanup();
         }
@@ -162,7 +159,7 @@ this.FeatureBackground();
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Create a high severity incident requiring approval", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 24
+#line 23
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -175,7 +172,7 @@ this.ScenarioInitialize(scenarioInfo);
 #line 6
 this.FeatureBackground();
 #line hidden
-#line 25
+#line 24
     testRunner.Given("I want to report a high severity incident", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
                 TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
@@ -183,91 +180,30 @@ this.FeatureBackground();
                             "Value"});
                 table2.AddRow(new string[] {
                             "Location",
-                            "Andar 10 - Ala Sul"});
+                            "10th Floor - South Wing"});
                 table2.AddRow(new string[] {
                             "Type",
                             "Fall"});
                 table2.AddRow(new string[] {
                             "Description",
-                            "Queda de altura crítica"});
+                            "Critical height fall"});
                 table2.AddRow(new string[] {
                             "Severity",
                             "High"});
                 table2.AddRow(new string[] {
                             "Cost",
                             "15000"});
-#line 26
+#line 25
     testRunner.When("I create an incident with the following details:", ((string)(null)), table2, "When ");
 #line hidden
-#line 33
+#line 32
     testRunner.Then("the incident should be created successfully", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 34
+#line 33
     testRunner.And("the incident status should be \"PendingApproval\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 35
+#line 34
     testRunner.And("the incident should require manager approval", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-#line 36
-    testRunner.And("the incident should require safety review", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-            }
-            this.ScenarioCleanup();
-        }
-        
-        [Xunit.SkippableFactAttribute(DisplayName="Create an electric shock incident requiring investigation notes")]
-        [Xunit.TraitAttribute("FeatureTitle", "Incident Management")]
-        [Xunit.TraitAttribute("Description", "Create an electric shock incident requiring investigation notes")]
-        public void CreateAnElectricShockIncidentRequiringInvestigationNotes()
-        {
-            string[] tagsOfScenario = ((string[])(null));
-            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Create an electric shock incident requiring investigation notes", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 38
-this.ScenarioInitialize(scenarioInfo);
-#line hidden
-            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
-            {
-                testRunner.SkipScenario();
-            }
-            else
-            {
-                this.ScenarioStart();
-#line 6
-this.FeatureBackground();
-#line hidden
-#line 39
-    testRunner.Given("I want to report an electric shock incident", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line hidden
-                TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
-                            "Field",
-                            "Value"});
-                table3.AddRow(new string[] {
-                            "Location",
-                            "Subestação"});
-                table3.AddRow(new string[] {
-                            "Type",
-                            "ElectricShock"});
-                table3.AddRow(new string[] {
-                            "Description",
-                            "Choque elétrico"});
-                table3.AddRow(new string[] {
-                            "Severity",
-                            "Medium"});
-                table3.AddRow(new string[] {
-                            "Cost",
-                            "8000"});
-                table3.AddRow(new string[] {
-                            "InvestigationNotes",
-                            "Falta de isolamento"});
-#line 40
-    testRunner.When("I create an incident with the following details:", ((string)(null)), table3, "When ");
-#line hidden
-#line 48
-    testRunner.Then("the incident should be created successfully", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-#line 49
-    testRunner.And("the incident should require safety review", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
             this.ScenarioCleanup();
@@ -281,7 +217,7 @@ this.FeatureBackground();
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Create an incident with non-existent employee", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 51
+#line 36
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -294,16 +230,16 @@ this.ScenarioInitialize(scenarioInfo);
 #line 6
 this.FeatureBackground();
 #line hidden
-#line 52
+#line 37
     testRunner.Given("I want to report an incident", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 53
+#line 38
     testRunner.When("I create an incident with a non-existent employee", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 54
+#line 39
     testRunner.Then("the system should return an error", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 55
+#line 40
     testRunner.And("the error message should contain \"Reported by employee not found\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
@@ -318,7 +254,7 @@ this.FeatureBackground();
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Approve a pending incident", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 57
+#line 42
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -331,20 +267,14 @@ this.ScenarioInitialize(scenarioInfo);
 #line 6
 this.FeatureBackground();
 #line hidden
-#line 58
+#line 43
     testRunner.Given("there is a pending incident requiring approval", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 59
+#line 44
     testRunner.When("I approve the incident as \"Manager Name\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 60
+#line 45
     testRunner.Then("the incident status should be \"Approved\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-#line 61
-    testRunner.And("the manager approval date should be set", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-#line 62
-    testRunner.And("the manager approved by should be \"Manager Name\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
             this.ScenarioCleanup();
@@ -358,7 +288,7 @@ this.FeatureBackground();
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Close an incident without approval", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 64
+#line 47
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -371,16 +301,16 @@ this.ScenarioInitialize(scenarioInfo);
 #line 6
 this.FeatureBackground();
 #line hidden
-#line 65
+#line 48
     testRunner.Given("there is a pending incident requiring approval", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 66
+#line 49
     testRunner.When("I try to close the incident", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 67
+#line 50
     testRunner.Then("the system should return an error", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 68
+#line 51
     testRunner.And("the error message should contain \"requires manager approval\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
@@ -395,7 +325,7 @@ this.FeatureBackground();
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Update an incident", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 70
+#line 53
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -408,34 +338,34 @@ this.ScenarioInitialize(scenarioInfo);
 #line 6
 this.FeatureBackground();
 #line hidden
-#line 71
+#line 54
     testRunner.Given("there is an existing incident", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-                TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
                             "Field",
                             "Value"});
-                table4.AddRow(new string[] {
+                table3.AddRow(new string[] {
                             "Location",
                             "Updated location"});
-                table4.AddRow(new string[] {
+                table3.AddRow(new string[] {
                             "Description",
                             "Updated description"});
-                table4.AddRow(new string[] {
+                table3.AddRow(new string[] {
                             "Cost",
                             "3000"});
-#line 72
-    testRunner.When("I update the incident with new details:", ((string)(null)), table4, "When ");
+#line 55
+    testRunner.When("I update the incident with new details:", ((string)(null)), table3, "When ");
 #line hidden
-#line 77
+#line 60
     testRunner.Then("the incident should be updated successfully", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 78
+#line 61
     testRunner.And("the incident location should be \"Updated location\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 79
+#line 62
     testRunner.And("the incident description should be \"Updated description\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 80
+#line 63
     testRunner.And("the incident cost should be 3000", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
@@ -450,7 +380,7 @@ this.FeatureBackground();
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get incidents by severity", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 82
+#line 65
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -463,94 +393,17 @@ this.ScenarioInitialize(scenarioInfo);
 #line 6
 this.FeatureBackground();
 #line hidden
-#line 83
+#line 66
     testRunner.Given("there are incidents with different severities", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 84
+#line 67
     testRunner.When("I request incidents with severity \"High\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 85
+#line 68
     testRunner.Then("I should receive only high severity incidents", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 86
+#line 69
     testRunner.And("all returned incidents should have severity \"High\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-            }
-            this.ScenarioCleanup();
-        }
-        
-        [Xunit.SkippableFactAttribute(DisplayName="Get high risk incidents")]
-        [Xunit.TraitAttribute("FeatureTitle", "Incident Management")]
-        [Xunit.TraitAttribute("Description", "Get high risk incidents")]
-        public void GetHighRiskIncidents()
-        {
-            string[] tagsOfScenario = ((string[])(null));
-            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get high risk incidents", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 88
-this.ScenarioInitialize(scenarioInfo);
-#line hidden
-            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
-            {
-                testRunner.SkipScenario();
-            }
-            else
-            {
-                this.ScenarioStart();
-#line 6
-this.FeatureBackground();
-#line hidden
-#line 89
-    testRunner.Given("there are incidents with different risk levels", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line hidden
-#line 90
-    testRunner.When("I request high risk incidents", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 91
-    testRunner.Then("I should receive incidents with high severity or cost over 10000", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-#line 92
-    testRunner.And("all returned incidents should be high risk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-            }
-            this.ScenarioCleanup();
-        }
-        
-        [Xunit.SkippableFactAttribute(DisplayName="Create incident with PPE violation and untrained employee")]
-        [Xunit.TraitAttribute("FeatureTitle", "Incident Management")]
-        [Xunit.TraitAttribute("Description", "Create incident with PPE violation and untrained employee")]
-        public void CreateIncidentWithPPEViolationAndUntrainedEmployee()
-        {
-            string[] tagsOfScenario = ((string[])(null));
-            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Create incident with PPE violation and untrained employee", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 94
-this.ScenarioInitialize(scenarioInfo);
-#line hidden
-            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
-            {
-                testRunner.SkipScenario();
-            }
-            else
-            {
-                this.ScenarioStart();
-#line 6
-this.FeatureBackground();
-#line hidden
-#line 95
-    testRunner.Given("I want to report a PPE violation incident", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line hidden
-#line 96
-    testRunner.And("the involved employee has not had safety training in the last 6 months", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-#line 97
-    testRunner.When("I create the incident with the untrained employee", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 98
-    testRunner.Then("the system should return an error", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-#line 99
-    testRunner.And("the error message should contain \"must have recent safety training\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
             this.ScenarioCleanup();

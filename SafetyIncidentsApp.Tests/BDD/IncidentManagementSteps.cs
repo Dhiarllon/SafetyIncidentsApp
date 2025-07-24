@@ -275,9 +275,6 @@ namespace SafetyIncidentsApp.Tests.BDD
                     case "cost":
                         _incidentDto.EstimatedCost = int.Parse(row["Value"]);
                         break;
-                    case "investigationnotes":
-                        _incidentDto.InvestigationNotes = row["Value"];
-                        break;
                     case "correctiveaction":
                         _incidentDto.CorrectiveAction = row["Value"];
                         break;
@@ -287,7 +284,7 @@ namespace SafetyIncidentsApp.Tests.BDD
             // Add default corrective action for high severity fall incidents if not provided
             if (_incidentDto.Type == IncidentType.Fall && _incidentDto.Severity == SeverityLevel.High && string.IsNullOrEmpty(_incidentDto.CorrectiveAction))
             {
-                _incidentDto.CorrectiveAction = "Implementar proteção coletiva";
+                _incidentDto.CorrectiveAction = "Implement collective protection";
             }
 
             _response = await _client.PostAsJsonAsync("/api/incident", _incidentDto);
@@ -461,48 +458,6 @@ namespace SafetyIncidentsApp.Tests.BDD
             }
         }
 
-        [Then(@"the incident should not require safety review")]
-        public async Task ThenTheIncidentShouldNotRequireSafetyReview()
-        {
-            if (_response.IsSuccessStatusCode && !string.IsNullOrEmpty(_responseContent))
-            {
-                try
-                {
-                    var incident = JsonSerializer.Deserialize<IncidentReadDto>(_responseContent, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
-                    incident.RequiresSafetyReview.Should().BeFalse();
-                }
-                catch (JsonException)
-                {
-                    // Skip this assertion if JSON parsing fails
-                    Console.WriteLine($"Failed to parse JSON response: {_responseContent}");
-                }
-            }
-        }
-
-        [Then(@"the incident should require safety review")]
-        public async Task ThenTheIncidentShouldRequireSafetyReview()
-        {
-            if (_response.IsSuccessStatusCode && !string.IsNullOrEmpty(_responseContent))
-            {
-                try
-                {
-                    var incident = JsonSerializer.Deserialize<IncidentReadDto>(_responseContent, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
-                    incident.RequiresSafetyReview.Should().BeTrue();
-                }
-                catch (JsonException)
-                {
-                    // Skip this assertion if JSON parsing fails
-                    Console.WriteLine($"Failed to parse JSON response: {_responseContent}");
-                }
-            }
-        }
-
         [Then(@"the system should return an error")]
         public void ThenTheSystemShouldReturnAnError()
         {
@@ -514,48 +469,6 @@ namespace SafetyIncidentsApp.Tests.BDD
         {
             var content = await _response.Content.ReadAsStringAsync();
             content.Should().Contain(expectedMessage);
-        }
-
-        [Then(@"the manager approval date should be set")]
-        public async Task ThenTheManagerApprovalDateShouldBeSet()
-        {
-            if (_response.IsSuccessStatusCode && !string.IsNullOrEmpty(_responseContent))
-            {
-                try
-                {
-                    var incident = JsonSerializer.Deserialize<IncidentReadDto>(_responseContent, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
-                    incident.ManagerApprovalDate.Should().NotBeNull();
-                }
-                catch (JsonException)
-                {
-                    // Skip this assertion if JSON parsing fails
-                    Console.WriteLine($"Failed to parse JSON response: {_responseContent}");
-                }
-            }
-        }
-
-        [Then(@"the manager approved by should be ""(.*)""")]
-        public async Task ThenTheManagerApprovedByShouldBe(string expectedManager)
-        {
-            if (_response.IsSuccessStatusCode && !string.IsNullOrEmpty(_responseContent))
-            {
-                try
-                {
-                    var incident = JsonSerializer.Deserialize<IncidentReadDto>(_responseContent, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
-                    incident.ManagerApprovedBy.Should().Be(expectedManager);
-                }
-                catch (JsonException)
-                {
-                    // Skip this assertion if JSON parsing fails
-                    Console.WriteLine($"Failed to parse JSON response: {_responseContent}");
-                }
-            }
         }
 
         [Then(@"the incident should be updated successfully")]
@@ -710,12 +623,6 @@ namespace SafetyIncidentsApp.Tests.BDD
                     Console.WriteLine($"Failed to parse JSON response: {_responseContent}");
                 }
             }
-        }
-
-        private async Task<IncidentReadDto> GetIncidentById(Guid id)
-        {
-            var response = await _client.GetAsync($"/api/incident/{id}");
-            return await response.Content.ReadFromJsonAsync<IncidentReadDto>();
         }
     }
 } 

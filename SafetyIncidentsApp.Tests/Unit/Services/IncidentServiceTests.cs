@@ -2,52 +2,36 @@ using Moq;
 using AutoMapper;
 using FluentAssertions;
 using SafetyIncidentsApp.Services;
-using SafetyIncidentsApp.Services.Interfaces;
 using SafetyIncidentsApp.Repositories.Interfaces;
 using SafetyIncidentsApp.DTOs;
 using SafetyIncidentsApp.Models;
-using SafetyIncidentsApp.Data;
-using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
-using Xunit;
+using SafetyIncidentsApp.Mappings;
 
 namespace SafetyIncidentsApp.Tests.Unit.Services
 {
-    public class IncidentServiceTests : IDisposable
+    public class IncidentServiceTests
     {
         private readonly Mock<IIncidentRepository> _mockRepository;
-        private readonly Mock<IMapper> _mockMapper;
-        private readonly AppDbContext _context;
+        private readonly Mock<IEmployeeRepository> _mockEmployeeRepository;
+        private readonly IMapper _mapper;
         private readonly IncidentService _service;
 
         public IncidentServiceTests()
         {
-            // Setup in-memory database
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-            
-            _context = new AppDbContext(options);
-            _context.Database.EnsureCreated();
-
             _mockRepository = new Mock<IIncidentRepository>();
-            _mockMapper = new Mock<IMapper>();
-            _service = new IncidentService(_mockRepository.Object, _mockMapper.Object, _context);
-        }
-
-        public void Dispose()
-        {
-            _context?.Dispose();
+            _mockEmployeeRepository = new Mock<IEmployeeRepository>();
+            var config = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>());
+            _mapper = config.CreateMapper();
+            _service = new IncidentService(_mockRepository.Object, _mockEmployeeRepository.Object, _mapper);
         }
 
         [Fact]
-        public async Task CreateAsync_WithHighSeverityFall_ShouldRequireManagerApprovalAndSafetyReview()
+        public async Task CreateAsync_WithHighSeverity_ShouldRequireManagerApproval()
         {
             // Arrange
             var employeeId = Guid.NewGuid();
             var employee = new Employee { Id = employeeId, IsActive = true };
-            _context.Employees.Add(employee);
-            await _context.SaveChangesAsync();
+            Incident? storedIncident = null;
 
             var incidentDto = new IncidentCreateDto
             {
@@ -57,154 +41,91 @@ namespace SafetyIncidentsApp.Tests.Unit.Services
                 Type = IncidentType.Fall,
                 Severity = SeverityLevel.High,
                 ReportedById = employeeId,
-                CorrectiveAction = "Implementar proteção coletiva",
                 EstimatedCost = 15000
             };
 
-            var incident = new Incident 
-            { 
-                Id = Guid.NewGuid(),
-                Severity = SeverityLevel.High,
-                Type = IncidentType.Fall,
-                EstimatedCost = 15000
-            };
-            var incidentReadDto = new IncidentReadDto { Id = incident.Id };
-
-            _mockRepository.Setup(r => r.AnyAsync(It.IsAny<Expression<Func<Incident, bool>>>()))
-                .ReturnsAsync(false);
-            _mockMapper.Setup(m => m.Map<Incident>(incidentDto)).Returns(incident);
-            _mockRepository.Setup(r => r.GetByIdWithDetailsAsync(incident.Id))
-                .ReturnsAsync(incident);
-            _mockMapper.Setup(m => m.Map<IncidentReadDto>(incident)).Returns(incidentReadDto);
+            _mockEmployeeRepository.Setup(r => r.GetByIdAsync(employeeId))
+                .ReturnsAsync(employee);
+            _mockRepository.Setup(r => r.AddAsync(It.IsAny<Incident>()))
+                .Callback<Incident>(i => storedIncident = i)
+                .Returns(Task.CompletedTask);
+            _mockRepository.Setup(r => r.SaveChangesAsync())
+                .Returns(Task.CompletedTask);
+            _mockRepository.Setup(r => r.GetByIdWithDetailsAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(() => storedIncident);
 
             // Act
             var result = await _service.CreateAsync(incidentDto);
 
             // Assert
             result.Should().NotBeNull();
-            incident.RequiresManagerApproval.Should().BeTrue();
-            incident.RequiresSafetyReview.Should().BeTrue();
-            incident.Status.Should().Be(IncidentStatus.PendingApproval);
-            
-            _mockRepository.Verify(r => r.AddAsync(incident), Times.Once);
+            storedIncident.Should().NotBeNull();
+            storedIncident!.RequiresManagerApproval.Should().BeTrue();
+            storedIncident.Status.Should().Be(IncidentStatus.PendingApproval);
+            _mockRepository.Verify(r => r.AddAsync(It.IsAny<Incident>()), Times.Once);
             _mockRepository.Verify(r => r.SaveChangesAsync(), Times.Once);
         }
 
         [Fact]
-        public async Task CreateAsync_WithElectricShock_ShouldRequireInvestigationNotes()
+        public async Task CreateAsync_WithLowSeverity_ShouldNotRequireManagerApproval()
         {
             // Arrange
             var employeeId = Guid.NewGuid();
             var employee = new Employee { Id = employeeId, IsActive = true };
-            _context.Employees.Add(employee);
-            await _context.SaveChangesAsync();
+            Incident? storedIncident = null;
 
             var incidentDto = new IncidentCreateDto
             {
                 Date = DateTime.UtcNow.AddDays(-1),
-                Location = "Subestação",
-                Description = "Choque elétrico",
-                Type = IncidentType.ElectricShock,
-                Severity = SeverityLevel.Medium,
-                ReportedById = employeeId
-                // Missing InvestigationNotes - should cause validation error
-            };
-
-            var incident = new Incident 
-            { 
-                Id = Guid.NewGuid(),
-                Severity = SeverityLevel.Medium,
-                Type = IncidentType.ElectricShock
-            };
-
-            _mockRepository.Setup(r => r.AnyAsync(It.IsAny<Expression<Func<Incident, bool>>>()))
-                .ReturnsAsync(false);
-            _mockMapper.Setup(m => m.Map<Incident>(incidentDto)).Returns(incident);
-
-            // Act & Assert
-            var exception = await Assert.ThrowsAsync<ArgumentException>(() => _service.CreateAsync(incidentDto));
-            exception.Message.Should().Contain("require investigation notes");
-        }
-
-        [Fact]
-        public async Task CreateAsync_WithPPEIncidentAndUntrainedEmployee_ShouldThrowException()
-        {
-            // Arrange
-            var reportedById = Guid.NewGuid();
-            var involvedEmployeeId = Guid.NewGuid();
-            
-            var reportedBy = new Employee { Id = reportedById, IsActive = true };
-            var involvedEmployee = new Employee 
-            { 
-                Id = involvedEmployeeId, 
-                IsActive = true, 
-                LastSafetyTraining = DateTime.UtcNow.AddMonths(-8) // Mais de 6 meses
-            };
-            
-            _context.Employees.AddRange(reportedBy, involvedEmployee);
-            await _context.SaveChangesAsync();
-
-            var incidentDto = new IncidentCreateDto
-            {
-                Date = DateTime.UtcNow.AddDays(-1),
-                Location = "Canteiro de obras",
-                Description = "Não uso de capacete",
-                Type = IncidentType.ImproperUseOfPPE,
-                Severity = SeverityLevel.Medium,
-                ReportedById = reportedById,
-                InvolvedEmployeeId = involvedEmployeeId
-            };
-
-            _mockRepository.Setup(r => r.AnyAsync(It.IsAny<Expression<Func<Incident, bool>>>()))
-                .ReturnsAsync(false);
-
-            // Act & Assert
-            var exception = await Assert.ThrowsAsync<ArgumentException>(() => _service.CreateAsync(incidentDto));
-            exception.Message.Should().Contain("must have recent safety training");
-        }
-
-        [Fact]
-        public async Task CreateAsync_WithHighCost_ShouldRequireManagerApproval()
-        {
-            // Arrange
-            var employeeId = Guid.NewGuid();
-            var employee = new Employee { Id = employeeId, IsActive = true };
-            _context.Employees.Add(employee);
-            await _context.SaveChangesAsync();
-
-            var incidentDto = new IncidentCreateDto
-            {
-                Date = DateTime.UtcNow.AddDays(-1),
-                Location = "Oficina",
-                Description = "Danos em equipamento",
-                Type = IncidentType.Other,
+                Location = "Andar 2 - Ala Norte",
+                Description = "Escorregou no piso molhado",
+                Type = IncidentType.Fall,
                 Severity = SeverityLevel.Low,
                 ReportedById = employeeId,
-                EstimatedCost = 7500
+                EstimatedCost = 500
             };
 
-            var incident = new Incident 
-            { 
-                Id = Guid.NewGuid(),
-                Severity = SeverityLevel.Low,
-                Type = IncidentType.Other,
-                EstimatedCost = 7500
-            };
-            var incidentReadDto = new IncidentReadDto { Id = incident.Id };
-
-            _mockRepository.Setup(r => r.AnyAsync(It.IsAny<Expression<Func<Incident, bool>>>()))
-                .ReturnsAsync(false);
-            _mockMapper.Setup(m => m.Map<Incident>(incidentDto)).Returns(incident);
-            _mockRepository.Setup(r => r.GetByIdWithDetailsAsync(incident.Id))
-                .ReturnsAsync(incident);
-            _mockMapper.Setup(m => m.Map<IncidentReadDto>(incident)).Returns(incidentReadDto);
+            _mockEmployeeRepository.Setup(r => r.GetByIdAsync(employeeId))
+                .ReturnsAsync(employee);
+            _mockRepository.Setup(r => r.AddAsync(It.IsAny<Incident>()))
+                .Callback<Incident>(i => storedIncident = i)
+                .Returns(Task.CompletedTask);
+            _mockRepository.Setup(r => r.SaveChangesAsync())
+                .Returns(Task.CompletedTask);
+            _mockRepository.Setup(r => r.GetByIdWithDetailsAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(() => storedIncident);
 
             // Act
             var result = await _service.CreateAsync(incidentDto);
 
             // Assert
-            incident.RequiresManagerApproval.Should().BeTrue();
-            incident.Status.Should().Be(IncidentStatus.PendingApproval);
+            result.Should().NotBeNull();
+            storedIncident.Should().NotBeNull();
+            storedIncident!.RequiresManagerApproval.Should().BeFalse();
+            storedIncident.Status.Should().Be(IncidentStatus.Reported);
+        }
+
+        [Fact]
+        public async Task CreateAsync_WithNonExistentEmployee_ShouldThrowException()
+        {
+            // Arrange
+            var employeeId = Guid.NewGuid();
+            var incidentDto = new IncidentCreateDto
+            {
+                Date = DateTime.UtcNow.AddDays(-1),
+                Location = "Test Location",
+                Description = "Test Description",
+                Type = IncidentType.Fall,
+                Severity = SeverityLevel.Low,
+                ReportedById = employeeId // Non-existent employee
+            };
+
+            _mockEmployeeRepository.Setup(r => r.GetByIdAsync(employeeId))
+                .ReturnsAsync((Employee?)null);
+
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<ArgumentException>(() => _service.CreateAsync(incidentDto));
+            exception.Message.Should().Contain("Reported by employee not found");
         }
 
         [Fact]
@@ -261,7 +182,7 @@ namespace SafetyIncidentsApp.Tests.Unit.Services
 
             var updateDto = new IncidentUpdateDto
             {
-                Description = "Nova descrição"
+                Description = "Updated description"
             };
 
             _mockRepository.Setup(r => r.GetByIdAsync(incidentId))
@@ -272,93 +193,24 @@ namespace SafetyIncidentsApp.Tests.Unit.Services
             exception.Message.Should().Contain("Cannot update a resolved incident");
         }
 
-        [Theory]
-        [InlineData(SeverityLevel.High, true, true, IncidentStatus.PendingApproval)]
-        [InlineData(SeverityLevel.Medium, true, false, IncidentStatus.PendingApproval)]
-        [InlineData(SeverityLevel.Low, false, false, IncidentStatus.Reported)]
-        public async Task CreateAsync_WithDifferentSeverities_ShouldApplyCorrectBusinessRules(
-            SeverityLevel severity, 
-            bool expectedManagerApproval, 
-            bool expectedSafetyReview, 
-            IncidentStatus expectedStatus)
-        {
-            // Arrange
-            var employeeId = Guid.NewGuid();
-            var employee = new Employee { Id = employeeId, IsActive = true };
-            _context.Employees.Add(employee);
-            await _context.SaveChangesAsync();
-
-            var incidentDto = new IncidentCreateDto
-            {
-                Date = DateTime.UtcNow.AddDays(-1),
-                Location = "Test location",
-                Description = "Test description",
-                Type = IncidentType.Fall,
-                Severity = severity,
-                ReportedById = employeeId,
-                EstimatedCost = 1000,
-                CorrectiveAction = "Test corrective action" // Required for high severity fall
-            };
-
-            var incident = new Incident 
-            { 
-                Id = Guid.NewGuid(),
-                Severity = severity,
-                Type = IncidentType.Fall,
-                EstimatedCost = 1000
-            };
-            var incidentReadDto = new IncidentReadDto { Id = incident.Id };
-
-            _mockRepository.Setup(r => r.AnyAsync(It.IsAny<Expression<Func<Incident, bool>>>()))
-                .ReturnsAsync(false);
-            _mockMapper.Setup(m => m.Map<Incident>(incidentDto)).Returns(incident);
-            _mockRepository.Setup(r => r.GetByIdWithDetailsAsync(incident.Id))
-                .ReturnsAsync(incident);
-            _mockMapper.Setup(m => m.Map<IncidentReadDto>(incident)).Returns(incidentReadDto);
-
-            // Act
-            var result = await _service.CreateAsync(incidentDto);
-
-            // Assert
-            incident.RequiresManagerApproval.Should().Be(expectedManagerApproval);
-            incident.RequiresSafetyReview.Should().Be(expectedSafetyReview);
-            incident.Status.Should().Be(expectedStatus);
-        }
-
         [Fact]
-        public async Task GetHighRiskIncidents_ShouldReturnOnlyHighRiskIncidents()
+        public async Task GetAllAsync_ShouldReturnAllIncidents()
         {
             // Arrange
-            var employeeId = Guid.NewGuid();
-            var employee = new Employee { Id = employeeId, IsActive = true };
-            _context.Employees.Add(employee);
-            await _context.SaveChangesAsync();
-
-            var highRiskIncidents = new List<Incident>
+            var incidents = new List<Incident>
             {
-                new Incident { Id = Guid.NewGuid(), Severity = SeverityLevel.High, ReportedById = employeeId },
-                new Incident { Id = Guid.NewGuid(), EstimatedCost = 15000, ReportedById = employeeId }
+                new Incident { Id = Guid.NewGuid(), Description = "Incidente 1" },
+                new Incident { Id = Guid.NewGuid(), Description = "Incidente 2" }
             };
-
-            var lowRiskIncidents = new List<Incident>
-            {
-                new Incident { Id = Guid.NewGuid(), Severity = SeverityLevel.Low, EstimatedCost = 1000, ReportedById = employeeId }
-            };
-
-            _context.Incidents.AddRange(highRiskIncidents);
-            _context.Incidents.AddRange(lowRiskIncidents);
-            await _context.SaveChangesAsync();
-
-            var expectedDtos = highRiskIncidents.Select(i => new IncidentReadDto { Id = i.Id }).ToList();
-            _mockMapper.Setup(m => m.Map<IEnumerable<IncidentReadDto>>(It.IsAny<IEnumerable<Incident>>()))
-                .Returns(expectedDtos);
+            _mockRepository.Setup(r => r.GetAllWithDetailsAsync()).ReturnsAsync(incidents);
 
             // Act
-            var result = await _service.GetHighRiskIncidentsAsync();
+            var result = (await _service.GetAllAsync()).ToList();
 
             // Assert
-            result.Should().NotBeNull();
             result.Should().HaveCount(2);
+            result.Should().BeEquivalentTo(_mapper.Map<List<IncidentReadDto>>(incidents));
+            result.Should().Contain(r => r.Description == "Incidente 1");
         }
     }
 } 

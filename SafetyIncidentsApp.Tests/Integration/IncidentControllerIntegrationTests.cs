@@ -156,7 +156,6 @@ namespace SafetyIncidentsApp.Tests.Integration
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             createdIncident.Should().NotBeNull();
             createdIncident.RequiresManagerApproval.Should().BeTrue();
-            createdIncident.RequiresSafetyReview.Should().BeTrue();
             createdIncident.Status.Should().Be(IncidentStatus.PendingApproval);
         }
 
@@ -383,50 +382,6 @@ namespace SafetyIncidentsApp.Tests.Integration
                 var incidents = await response.Content.ReadFromJsonAsync<List<IncidentReadDto>>();
                 incidents.Should().NotBeNull();
                 incidents.Should().OnlyContain(i => i.Severity == SeverityLevel.High);
-            }
-        }
-
-        [Fact]
-        public async Task GetHighRiskIncidents_ShouldReturnHighRiskIncidents()
-        {
-            // Arrange - Create high risk incidents
-            var highSeverityDto = new IncidentCreateDto
-            {
-                Date = DateTime.UtcNow.AddDays(-1),
-                Location = "High severity location",
-                Type = IncidentType.Fall,
-                Description = "High severity incident",
-                Severity = SeverityLevel.High,
-                ReportedById = Guid.Parse("11111111-1111-1111-1111-111111111111"),
-                EstimatedCost = 1000,
-                CorrectiveAction = "Implementar proteção coletiva" // Required for high severity fall
-            };
-
-            var highCostDto = new IncidentCreateDto
-            {
-                Date = DateTime.UtcNow.AddDays(-1),
-                Location = "High cost location",
-                Type = IncidentType.Fall,
-                Description = "High cost incident",
-                Severity = SeverityLevel.Low,
-                ReportedById = Guid.Parse("11111111-1111-1111-1111-111111111111"),
-                EstimatedCost = 15000
-            };
-
-            await _client.PostAsJsonAsync("/api/incident", highSeverityDto);
-            await _client.PostAsJsonAsync("/api/incident", highCostDto);
-
-            // Act
-            var response = await _client.GetAsync("/api/incident/high-risk");
-
-            // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            if (response.IsSuccessStatusCode)
-            {
-                var incidents = await response.Content.ReadFromJsonAsync<List<IncidentReadDto>>();
-                incidents.Should().NotBeNull();
-                incidents.Should().HaveCount(2);
-                incidents.Should().OnlyContain(i => i.Severity == SeverityLevel.High || i.EstimatedCost > 10000);
             }
         }
     }

@@ -21,6 +21,7 @@ public static class TestHostBuilder
 
         // Repositories
         services.AddScoped<IIncidentRepository, IncidentRepository>();
+        services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
         // Services

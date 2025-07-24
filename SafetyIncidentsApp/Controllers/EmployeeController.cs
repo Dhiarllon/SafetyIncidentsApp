@@ -50,32 +50,4 @@ public class EmployeeController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-
-    [HttpGet("by-department")]
-    public async Task<ActionResult<IEnumerable<EmployeeReadDto>>> GetEmployeesByDepartment([FromQuery] string department)
-    {
-        var result = await _employeeService.GetByDepartmentAsync(department);
-        return Ok(result);
-    }
-
-    [HttpGet("needs-training")]
-    public async Task<ActionResult<IEnumerable<EmployeeReadDto>>> GetEmployeesNeedingTraining()
-    {
-        var result = await _employeeService.GetEmployeesNeedingTrainingAsync();
-        return Ok(result);
-    }
-
-    [HttpPut("{id}/update-training")]
-    public async Task<IActionResult> UpdateTrainingRecord(Guid id, [FromBody] DateTime trainingDate)
-    {
-        try
-        {
-            await _employeeService.UpdateTrainingRecordAsync(id, trainingDate);
-            return NoContent();
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
 } 

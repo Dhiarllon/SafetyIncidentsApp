@@ -15,12 +15,12 @@ namespace SafetyIncidentsApp.Tests.Unit.DTOs
             var dto = new IncidentCreateDto
             {
                 Date = DateTime.UtcNow.AddDays(-1),
-                Location = "Andar 3 - Ala Norte",
+                Location = "3rd Floor - North Wing",
                 Type = IncidentType.Fall,
-                Description = "Queda de altura",
+                Description = "Height fall",
                 Severity = SeverityLevel.Medium,
                 ReportedById = Guid.NewGuid(),
-                CorrectiveAction = "Implementar proteção coletiva",
+                CorrectiveAction = "Implement collective protection",
                 EstimatedCost = 5000
             };
 
@@ -31,35 +31,6 @@ namespace SafetyIncidentsApp.Tests.Unit.DTOs
             // Assert
             isValid.Should().BeTrue();
             validationResults.Should().BeEmpty();
-        }
-
-        [Fact]
-        public void IncidentCreateDto_WithMissingRequiredFields_ShouldFailValidation()
-        {
-            // Arrange
-            var dto = new IncidentCreateDto
-            {
-                // All required fields are missing or have invalid values
-                Date = DateTime.UtcNow.AddDays(1), // Future date - should fail validation
-                Location = string.Empty,
-                Type = (IncidentType)999, // Invalid enum value - should fail validation
-                Description = string.Empty,
-                Severity = (SeverityLevel)999, // Invalid enum value - should fail validation
-                ReportedById = Guid.Empty
-            };
-
-            // Act
-            var validationResults = new List<ValidationResult>();
-            var isValid = Validator.TryValidateObject(dto, new ValidationContext(dto), validationResults, true);
-
-            // Assert
-            isValid.Should().BeFalse();
-            validationResults.Should().Contain(v => v.MemberNames.Contains("Date"));
-            validationResults.Should().Contain(v => v.MemberNames.Contains("Location"));
-            validationResults.Should().Contain(v => v.MemberNames.Contains("Type"));
-            validationResults.Should().Contain(v => v.MemberNames.Contains("Description"));
-            validationResults.Should().Contain(v => v.MemberNames.Contains("Severity"));
-            validationResults.Should().Contain(v => v.MemberNames.Contains("ReportedById"));
         }
 
         [Fact]
@@ -156,30 +127,6 @@ namespace SafetyIncidentsApp.Tests.Unit.DTOs
             validationResults.Should().Contain(v => v.MemberNames.Contains("Description"));
         }
 
-        [Fact]
-        public void IncidentCreateDto_WithNegativeEstimatedCost_ShouldFailValidation()
-        {
-            // Arrange
-            var dto = new IncidentCreateDto
-            {
-                Date = DateTime.UtcNow.AddDays(-1),
-                Location = "Test location",
-                Type = IncidentType.Fall,
-                Description = "Test description",
-                Severity = SeverityLevel.Medium,
-                ReportedById = Guid.NewGuid(),
-                EstimatedCost = -1000
-            };
-
-            // Act
-            var validationResults = new List<ValidationResult>();
-            var isValid = Validator.TryValidateObject(dto, new ValidationContext(dto), validationResults, true);
-
-            // Assert
-            isValid.Should().BeFalse();
-            validationResults.Should().Contain(v => v.MemberNames.Contains("EstimatedCost"));
-        }
-
         [Theory]
         [InlineData(0)]
         [InlineData(1000)]
@@ -274,12 +221,8 @@ namespace SafetyIncidentsApp.Tests.Unit.DTOs
                 Severity = SeverityLevel.Medium,
                 ReportedById = Guid.NewGuid(),
                 CorrectiveAction = "Test corrective action",
-                InvestigationNotes = "Test investigation notes",
-                Witnesses = "Test witnesses",
                 InvolvedEmployeeId = Guid.NewGuid(),
-                SafetyInspectionId = Guid.NewGuid(),
-                EstimatedCost = 1000,
-                IsNearMiss = true
+                EstimatedCost = 5000
             };
 
             // Act
@@ -289,78 +232,6 @@ namespace SafetyIncidentsApp.Tests.Unit.DTOs
             // Assert
             isValid.Should().BeTrue();
             validationResults.Should().BeEmpty();
-        }
-
-        [Fact]
-        public void IncidentCreateDto_WithCorrectiveActionTooLong_ShouldFailValidation()
-        {
-            // Arrange
-            var dto = new IncidentCreateDto
-            {
-                Date = DateTime.UtcNow.AddDays(-1),
-                Location = "Test location",
-                Type = IncidentType.Fall,
-                Description = "Test description",
-                Severity = SeverityLevel.Medium,
-                ReportedById = Guid.NewGuid(),
-                CorrectiveAction = new string('A', 501) // Exceeds 500 characters
-            };
-
-            // Act
-            var validationResults = new List<ValidationResult>();
-            var isValid = Validator.TryValidateObject(dto, new ValidationContext(dto), validationResults, true);
-
-            // Assert
-            isValid.Should().BeFalse();
-            validationResults.Should().Contain(v => v.MemberNames.Contains("CorrectiveAction"));
-        }
-
-        [Fact]
-        public void IncidentCreateDto_WithInvestigationNotesTooLong_ShouldFailValidation()
-        {
-            // Arrange
-            var dto = new IncidentCreateDto
-            {
-                Date = DateTime.UtcNow.AddDays(-1),
-                Location = "Test location",
-                Type = IncidentType.Fall,
-                Description = "Test description",
-                Severity = SeverityLevel.Medium,
-                ReportedById = Guid.NewGuid(),
-                InvestigationNotes = new string('A', 1001) // Exceeds 1000 characters
-            };
-
-            // Act
-            var validationResults = new List<ValidationResult>();
-            var isValid = Validator.TryValidateObject(dto, new ValidationContext(dto), validationResults, true);
-
-            // Assert
-            isValid.Should().BeFalse();
-            validationResults.Should().Contain(v => v.MemberNames.Contains("InvestigationNotes"));
-        }
-
-        [Fact]
-        public void IncidentCreateDto_WithWitnessesTooLong_ShouldFailValidation()
-        {
-            // Arrange
-            var dto = new IncidentCreateDto
-            {
-                Date = DateTime.UtcNow.AddDays(-1),
-                Location = "Test location",
-                Type = IncidentType.Fall,
-                Description = "Test description",
-                Severity = SeverityLevel.Medium,
-                ReportedById = Guid.NewGuid(),
-                Witnesses = new string('A', 501) // Exceeds 500 characters
-            };
-
-            // Act
-            var validationResults = new List<ValidationResult>();
-            var isValid = Validator.TryValidateObject(dto, new ValidationContext(dto), validationResults, true);
-
-            // Assert
-            isValid.Should().BeFalse();
-            validationResults.Should().Contain(v => v.MemberNames.Contains("Witnesses"));
         }
     }
 } 

@@ -17,17 +17,10 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.IsResolved, opt => opt.Ignore())
             .ForMember(dest => dest.ResolvedDate, opt => opt.Ignore())
-            .ForMember(dest => dest.ResolvedBy, opt => opt.Ignore())
             .ForMember(dest => dest.Status, opt => opt.Ignore())
             .ForMember(dest => dest.RequiresManagerApproval, opt => opt.Ignore())
-            .ForMember(dest => dest.RequiresSafetyReview, opt => opt.Ignore())
-            .ForMember(dest => dest.ManagerApprovalDate, opt => opt.Ignore())
-            .ForMember(dest => dest.ManagerApprovedBy, opt => opt.Ignore())
-            .ForMember(dest => dest.SafetyReviewDate, opt => opt.Ignore())
-            .ForMember(dest => dest.SafetyReviewedBy, opt => opt.Ignore())
             .ForMember(dest => dest.ReportedBy, opt => opt.Ignore())
-            .ForMember(dest => dest.InvolvedEmployee, opt => opt.Ignore())
-            .ForMember(dest => dest.SafetyInspection, opt => opt.Ignore());
+            .ForMember(dest => dest.InvolvedEmployee, opt => opt.Ignore());
 
         CreateMap<IncidentUpdateDto, Incident>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
@@ -35,14 +28,8 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.ReportedById, opt => opt.Ignore())
             .ForMember(dest => dest.IsResolved, opt => opt.Ignore())
             .ForMember(dest => dest.ResolvedDate, opt => opt.Ignore())
-            .ForMember(dest => dest.ResolvedBy, opt => opt.Ignore())
-            .ForMember(dest => dest.ManagerApprovalDate, opt => opt.Ignore())
-            .ForMember(dest => dest.ManagerApprovedBy, opt => opt.Ignore())
-            .ForMember(dest => dest.SafetyReviewDate, opt => opt.Ignore())
-            .ForMember(dest => dest.SafetyReviewedBy, opt => opt.Ignore())
             .ForMember(dest => dest.ReportedBy, opt => opt.Ignore())
             .ForMember(dest => dest.InvolvedEmployee, opt => opt.Ignore())
-            .ForMember(dest => dest.SafetyInspection, opt => opt.Ignore())
             .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
         // Employee mappings
@@ -50,15 +37,6 @@ public class MappingProfile : Profile
         CreateMap<EmployeeCreateDto, Employee>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.ReportedIncidents, opt => opt.Ignore())
-            .ForMember(dest => dest.InvolvedIncidents, opt => opt.Ignore())
-            .ForMember(dest => dest.ConductedInspections, opt => opt.Ignore());
-
-        // SafetyInspection mappings
-        CreateMap<SafetyInspection, SafetyInspectionReadDto>()
-            .ForMember(dest => dest.InspectorName, opt => opt.MapFrom(src => src.Inspector.Name));
-        CreateMap<SafetyInspectionCreateDto, SafetyInspection>()
-            .ForMember(dest => dest.Id, opt => opt.Ignore())
-            .ForMember(dest => dest.Inspector, opt => opt.Ignore())
-            .ForMember(dest => dest.RelatedIncidents, opt => opt.Ignore());
+            .ForMember(dest => dest.InvolvedIncidents, opt => opt.Ignore());
     }
 }

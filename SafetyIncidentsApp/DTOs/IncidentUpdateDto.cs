@@ -5,34 +5,24 @@ namespace SafetyIncidentsApp.DTOs
 {
     public class IncidentUpdateDto
     {
-        [StringLength(200, ErrorMessage = "Location cannot exceed 200 characters.")]
+        [StringLength(200)]
         public string? Location { get; set; }
 
-        [StringLength(1000, ErrorMessage = "Description cannot exceed 1000 characters.")]
+        [StringLength(1000)]
         public string? Description { get; set; }
 
         public IncidentType? Type { get; set; }
 
         public SeverityLevel? Severity { get; set; }
 
-        [StringLength(500, ErrorMessage = "Corrective action cannot exceed 500 characters.")]
+        [StringLength(500)]
         public string? CorrectiveAction { get; set; }
 
         public Guid? InvolvedEmployeeId { get; set; }
 
-        public Guid? SafetyInspectionId { get; set; }
-
         public IncidentStatus? Status { get; set; }
 
-        [StringLength(1000, ErrorMessage = "Investigation notes cannot exceed 1000 characters.")]
-        public string? InvestigationNotes { get; set; }
-
-        [Range(0, int.MaxValue, ErrorMessage = "Estimated cost must be non-negative.")]
+        [Range(0, int.MaxValue)]
         public int? EstimatedCost { get; set; }
-
-        public bool? IsNearMiss { get; set; }
-
-        [StringLength(500, ErrorMessage = "Witnesses cannot exceed 500 characters.")]
-        public string? Witnesses { get; set; }
     }
 } 

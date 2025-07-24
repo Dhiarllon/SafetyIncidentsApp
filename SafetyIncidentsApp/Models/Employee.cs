@@ -15,6 +15,5 @@ namespace SafetyIncidentsApp.Models
         // Navigation properties
         public virtual ICollection<Incident> ReportedIncidents { get; set; } = new List<Incident>();
         public virtual ICollection<Incident> InvolvedIncidents { get; set; } = new List<Incident>();
-        public virtual ICollection<SafetyInspection> ConductedInspections { get; set; } = new List<SafetyInspection>();
     }
 } 

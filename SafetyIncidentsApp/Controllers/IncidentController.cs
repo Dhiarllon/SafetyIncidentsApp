@@ -71,13 +71,6 @@ public class IncidentController : ControllerBase
         }
     }
 
-    [HttpGet("recent")]
-    public async Task<ActionResult<IEnumerable<IncidentReadDto>>> GetRecentIncidents()
-    {
-        var result = await _incidentService.GetRecentIncidentsAsync();
-        return Ok(result);
-    }
-
     [HttpGet("by-severity")]
     public async Task<ActionResult<IEnumerable<IncidentReadDto>>> GetIncidentsBySeverity([FromQuery] SeverityLevel severity)
     {
@@ -85,24 +78,10 @@ public class IncidentController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("by-employee/{employeeId}")]
-    public async Task<ActionResult<IEnumerable<IncidentReadDto>>> GetIncidentsByEmployee(Guid employeeId)
-    {
-        var result = await _incidentService.GetByEmployeeAsync(employeeId);
-        return Ok(result);
-    }
-
     [HttpGet("pending-approval")]
     public async Task<ActionResult<IEnumerable<IncidentReadDto>>> GetPendingApprovalIncidents()
     {
         var result = await _incidentService.GetPendingApprovalAsync();
-        return Ok(result);
-    }
-
-    [HttpGet("high-risk")]
-    public async Task<ActionResult<IEnumerable<IncidentReadDto>>> GetHighRiskIncidents()
-    {
-        var result = await _incidentService.GetHighRiskIncidentsAsync();
         return Ok(result);
     }
 
